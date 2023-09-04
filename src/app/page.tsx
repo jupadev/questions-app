@@ -1,8 +1,9 @@
-import {createClient} from "@supabase/supabase-js";
-import {revalidatePath} from "next/cache";
+import { createClient } from "@supabase/supabase-js";
+import { revalidatePath } from "next/cache";
 
 const supabaseUrl = process.env.SUPABASE_URL ?? "";
 const supabaseKey = process.env.SUPABASE_KEY ?? "";
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 interface Question {
@@ -10,21 +11,22 @@ interface Question {
   text: string;
 }
 
+const QUESTIONS_TABLE = "questions";
+
 const handleSubmit = async (formData: FormData) => {
   "use server";
-  const text = formData.get("question");
+  const question = formData.get("question");
 
-  await supabase.from("questions").insert({text});
+  await supabase.from(QUESTIONS_TABLE).insert({ text: question });
   revalidatePath("/");
 };
 
 const getQuestions = async () => {
   const questions = await supabase
-    .from("questions")
+    .from(QUESTIONS_TABLE)
     .select()
-    .order("created_at", {ascending: false})
-    .then(({data}) => data as Question[]);
-
+    .order("created_at", { ascending: false })
+    .then(({ data }) => data as Question[]);
   return questions;
 };
 
@@ -44,7 +46,10 @@ export default async function Home() {
             type="text"
           />
         </label>
-        <button className="group relative inline-block w-full text-lg" type="submit">
+        <button
+          className="group relative inline-block w-full text-lg"
+          type="submit"
+        >
           <span className="relative z-10 block overflow-hidden rounded-lg border-2 border-gray-900 px-5 py-3 font-medium leading-tight text-gray-800 transition-colors duration-300 ease-out group-hover:text-white">
             <span className="absolute inset-0 h-full w-full rounded-lg bg-pink-50 px-5 py-3" />
             <span className="ease absolute left-0 h-48 w-48 w-full origin-top-right -translate-x-full translate-y-12 -rotate-90 bg-pink-600 transition-all duration-300 group-hover:-rotate-180" />
@@ -60,8 +65,12 @@ export default async function Home() {
       <article className="grid grid-cols-4 items-start gap-4">
         {questions.map((question) => (
           <section key={question.id}>
-            <header className="rounded-t-lg bg-pink-500 p-4 text-xl">NiceQuestion</header>
-            <p className="rounded-b-lg bg-white p-4 text-xl text-gray-900">{question.text}</p>
+            <header className="rounded-t-lg bg-pink-500 p-4 text-xl">
+              NiceQuestion
+            </header>
+            <p className="rounded-b-lg bg-white p-4 text-xl text-gray-900">
+              {question.text}
+            </p>
           </section>
         ))}
       </article>
