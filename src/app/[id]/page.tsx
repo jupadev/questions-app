@@ -1,27 +1,25 @@
 import { createClient } from "@supabase/supabase-js";
-import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { CopyToClipboardButton } from "./CopyToClipboardButton";
+import { QUESTIONS_TABLE } from "../constants";
 
 const supabaseUrl = process.env.SUPABASE_URL ?? "";
 const supabaseKey = process.env.SUPABASE_KEY ?? "";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-interface Question {
+export interface QuestionProp {
   id: string;
   text: string;
 }
 
-const QUESTIONS_TABLE = "questions";
-
-export const getQuestion = async (id: string) => {
+const getQuestion = async (id: string) => {
   const question = await supabase
     .from(QUESTIONS_TABLE)
     .select()
     .eq("id", id)
     .single()
-    .then(({ data }) => data as Question);
+    .then(({ data }) => data as QuestionProp);
   return question;
 };
 

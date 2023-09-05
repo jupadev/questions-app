@@ -1,5 +1,22 @@
 import { ImageResponse } from "next/server";
-import { QuestionsProps, getQuestion } from "./page";
+import { createClient } from "@supabase/supabase-js";
+import { QuestionProp, QuestionsProps } from "./page";
+import { QUESTIONS_TABLE } from "../constants";
+
+const supabaseUrl = process.env.SUPABASE_URL ?? "";
+const supabaseKey = process.env.SUPABASE_KEY ?? "";
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const getQuestion = async (id: string) => {
+  const question = await supabase
+    .from(QUESTIONS_TABLE)
+    .select()
+    .eq("id", id)
+    .single()
+    .then(({ data }) => data as QuestionProp);
+  return question;
+};
 
 // Route segment config
 export const runtime = "edge";

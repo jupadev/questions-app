@@ -4,6 +4,7 @@ import Link from "next/link";
 import crypto from "crypto";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/Button";
+import { QUESTIONS_TABLE } from "./constants";
 
 const supabaseUrl = process.env.SUPABASE_URL ?? "";
 const supabaseKey = process.env.SUPABASE_KEY ?? "";
@@ -15,11 +16,11 @@ interface Question {
   text: string;
 }
 
-const QUESTIONS_TABLE = "questions";
+const FORM_NAME = "question";
 
 const handleSubmit = async (formData: FormData) => {
   "use server";
-  const question = formData.get("question");
+  const question = formData.get(FORM_NAME);
   const id = crypto.randomUUID();
   const { error } = await supabase
     .from(QUESTIONS_TABLE)
@@ -54,7 +55,7 @@ export default async function Questions() {
             required
             className="mb-3 w-full appearance-none rounded-lg border border-pink-500 px-3 py-2 leading-tight text-white shadow focus:outline-none"
             maxLength={200}
-            name="question"
+            name={FORM_NAME}
             type="text"
           />
         </label>
